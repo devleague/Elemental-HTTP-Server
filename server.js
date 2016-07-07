@@ -61,27 +61,19 @@ req.on('error', function(e) {
 req.end();
 
 var server = http.createServer(function(req, res) {
-  console.log("Sanity check");
-  console.log("\nReq: " + Object.getOwnPropertyNames(req));
-  console.log("\nRes: " + Object.getOwnPropertyNames(res));
-  console.log(res.socket);
+  console.log("\nSanity check");
+
   console.log(req.method);
   console.log(req.headers);
-  console.log(req.data);
-  console.log(res.output);
+  //console.log(req.data);
+  //console.log(res.output);
 
   req.on('data', function(data) {
-
     console.log("Data coming in");
     var dataInput = data.toString();
-    console.log(dataInput);
+    var dataObjects = querystring.parse(dataInput);
 
-    var splitRequest = dataInput.split('&');
-    console.log(splitRequest);
-
-    // splitRequest.forEach()
-    // var key = splitRequest.split('=');
-    // console.log(key);
+    console.log(dataObjects);
   });
 });
 
