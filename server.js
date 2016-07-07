@@ -9,8 +9,9 @@ var heliumHTML = fs.readFile('./public/helium.html', function(err, data) {
 });
 
 var htmlToSend = "";
-
 var dataInput = "";
+var outputFile = "";
+var dataObjects = "";
 
 // var hydrogenHTML = fs.readFile('./public/hydrogen.html', function(err, data) {
 //   hydrogenHTMLString = data.toString();
@@ -74,57 +75,29 @@ var server = http.createServer(function(request, response) {
   request.on('data', function(data) {
     console.log("Data coming in");
     var dataInput = data.toString();
-    var dataObjects = querystring.parse(dataInput);
+    dataObjects = querystring.parse(dataInput);
     console.log(dataObjects);
+    outputFile = dataObjects.elementName + '.html';
+  });
 
-    var outputFile = dataObjects.elementName + '.html';
-
+  request.on('end', function () {
     console.log('Start reading file.');
 
-    var DOCTYPE = "<!DOCTYPE html>\n";
-    htmlToSend += DOCTYPE;
-
-    var html = '<html lang="en">\n';
-    htmlToSend += html;
-
-    var head = "<head>\n";
-    htmlToSend += head;
-
-    var meta = '  <meta charset="UTF-8">\n';
-    htmlToSend += meta;
-
-    var title = "  <title>The Elements - " + dataObjects.elementName + "</title>\n";
-    htmlToSend += title;
-
-    var link = '  <link rel="stylesheet" href="/css/styles.css">\n';
-    htmlToSend += link;
-
-    var headEnd = "</head>\n";
-    htmlToSend += headEnd;
-
-    var body = "<body>\n";
-    htmlToSend += body;
-
-    var h1 = "  <h1>" + dataObjects.elementName + "</h1>\n";
-    htmlToSend += h1;
-
-    var h2 = "  <h2>" + dataObjects.elementSymbol + "</h2>\n";
-    htmlToSend += h2;
-
-    var h3 = "  <h3>" + dataObjects.elementAtomicNumber + "</h3>\n";
-    htmlToSend += h3;
-
-    var p = "  <p>" + dataObjects.elementDescription + "</p>\n";
-    htmlToSend += p;
-
-    var p2nd = '  <p><a href="/">back</a></p>\n';
-    htmlToSend += p2nd;
-
-    var bodyEnd = "</body>\n";
-    htmlToSend += bodyEnd;
-
-    var htmlEnd = "</html>";
-    htmlToSend += htmlEnd;
+    htmlToSend += "<!DOCTYPE html>\n";
+    htmlToSend += '<html lang="en">\n';
+    htmlToSend += "<head>\n";
+    htmlToSend += '  <meta charset="UTF-8">\n';
+    htmlToSend += "  <title>The Elements - " + dataObjects.elementName + "</title>\n";
+    htmlToSend += '  <link rel="stylesheet" href="/css/styles.css">\n';
+    htmlToSend += "</head>\n";
+    htmlToSend += "<body>\n";
+    htmlToSend += "  <h1>" + dataObjects.elementName + "</h1>\n";
+    htmlToSend += "  <h2>" + dataObjects.elementSymbol + "</h2>\n";
+    htmlToSend += "  <h3>" + dataObjects.elementAtomicNumber + "</h3>\n";
+    htmlToSend += "  <p>" + dataObjects.elementDescription + "</p>\n";
+    htmlToSend += '  <p><a href="/">back</a></p>\n';
+    htmlToSend += "</body>\n";
+    htmlToSend += "</html>";
 
     fs.writeFile('./public/' + outputFile, htmlToSend, 'utf8', function (err) {
       if (err) throw err;
