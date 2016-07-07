@@ -8,6 +8,8 @@ var heliumHTML = fs.readFile('./public/helium.html', function(err, data) {
   console.log(heliumHTMLString);
 });
 
+var htmlToSend = "";
+
 var dataInput = "";
 
 // var hydrogenHTML = fs.readFile('./public/hydrogen.html', function(err, data) {
@@ -42,6 +44,7 @@ var options = {
 };
 
 var req = http.request(options, function (res) {
+
   console.log(res);
   // console.log("STATUS: " + res.statusCode);
   res.setEncoding('utf8');
@@ -60,20 +63,73 @@ req.on('error', function(e) {
 //req.write(postData);
 req.end();
 
-var server = http.createServer(function(req, res) {
+var server = http.createServer(function(request, response) {
   console.log("\nSanity check");
 
-  console.log(req.method);
-  console.log(req.headers);
+  console.log(request.method);
+  console.log(request.headers);
   //console.log(req.data);
   //console.log(res.output);
 
-  req.on('data', function(data) {
+  request.on('data', function(data) {
     console.log("Data coming in");
     var dataInput = data.toString();
     var dataObjects = querystring.parse(dataInput);
-
     console.log(dataObjects);
+
+    var outputFile = dataObjects.elementName + '.html';
+
+    console.log('Start reading file.');
+
+    var DOCTYPE = "<!DOCTYPE html>\n";
+    htmlToSend += DOCTYPE;
+
+    var html = '<html lang="en">\n';
+    htmlToSend += html;
+
+    var head = "<head>\n";
+    htmlToSend += head;
+
+    var meta = '  <meta charset="UTF-8">\n';
+    htmlToSend += meta;
+
+    var title = "  <title>The Elements - " + dataObjects.elementName + "</title>\n";
+    htmlToSend += title;
+
+    var link = '  <link rel="stylesheet" href="/css/styles.css">\n';
+    htmlToSend += link;
+
+    var headEnd = "</head>\n";
+    htmlToSend += headEnd;
+
+    var body = "<body>\n";
+    htmlToSend += body;
+
+    var h1 = "  <h1>" + dataObjects.elementName + "</h1>\n";
+    htmlToSend += h1;
+
+    var h2 = "  <h2>" + dataObjects.elementSymbol + "</h2>\n";
+    htmlToSend += h2;
+
+    var h3 = "  <h3>" + dataObjects.elementAtomicNumber + "</h3>\n";
+    htmlToSend += h3;
+
+    var p = "  <p>" + dataObjects.elementDescription + "</p>\n";
+    htmlToSend += p;
+
+    var p2nd = '  <p><a href="/">back</a></p>\n';
+    htmlToSend += p2nd;
+
+    var bodyEnd = "</body>\n";
+    htmlToSend += bodyEnd;
+
+    var htmlEnd = "</html>";
+    htmlToSend += htmlEnd;
+
+    fs.writeFile('./public/' + outputFile, htmlToSend, 'utf8', function (err) {
+      if (err) throw err;
+      console.log('File Successfully written');
+    });
   });
 });
 
