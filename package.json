@@ -1,0 +1,24 @@
+{
+  "name": "elemental-http-server",
+  "version": "1.0.0",
+  "description": "### Basic HTTP Server that reads from and writes to fs",
+  "main": "server.js",
+  "dependencies": {
+    "concat-stream": "^1.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marunoa/Elemental-HTTP-Server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marunoa/Elemental-HTTP-Server/issues"
+  },
+  "homepage": "https://github.com/marunoa/Elemental-HTTP-Server#readme"
+}
