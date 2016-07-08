@@ -135,6 +135,12 @@ var server = http.createServer(function(request, response) {
       //   });
       // });
     }
+
+    if(request.method === "DELETE"){
+      console.log('\n*****DELETE*****');
+      fs.unlink("./public" + request.url);
+      console.log('deleted!');
+    }
   });
 });
 
