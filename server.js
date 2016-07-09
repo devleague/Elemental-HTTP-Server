@@ -1,59 +1,30 @@
-
-// NodeJS Docs: HTTP Transaction \\
-
-/*var server = http.createServer(function (request, response) { // function is a request handler and server is an event emmiter
-
-  // Method, URL and Headers
-
-  var method = request.method;  // normal HTTP method
-  var url = request.url;  // full URL without the server, protocol or port
-  var headers = request.headers;  // headers = own object (all lowercase to simplify parsing task)
-                                  // if headers are repeated ==> (https://nodejs.org/api/http.html#http_message_rawheaders)
-  var userAgent = headers['user-agent']; // same as headers
-
-  // Request Body (for POST/PUT)
-
-  var body = [];
-  request.on('data', function (chunk) { // readable stream interface ('data' and 'end')
-    body.push(chunk);
-  }).on('end', function() {
-    body = Buffer.concat(body).toString(); // entire body stored as string now (npm install concat-stream to use)
-  });
-
-  // Errors (request is a readable stream so is also an event emitter)
-
-  request.on('error', function (err) {  // https://nodejs.org/api/errors.html
-    console.error(err.stack); // prints the error message and stack trace to `stderr`
-  });
-
-}).listen(8080); // listening on port 8080
-*/
-
-
-
-// just trying..
-
 var http = require('http');
-var fs = require('fs');
 var port = 8080;
+var concat = require ('concat-stream');
+var body = [];
 
 var server = http.createServer();
 
 server.on('request', function(request, response) {
 
-  var headers = request.headers;
   var method = request.method;
   var url = request.url;
   (console.log(url));
 
   switch (method) {
 
-    case "GET":
-    if (url === "/") {
+    case 'GET':
+    if (url === '/') {
       getHomepage(request, response);
     }
     else if (url) {
       getForm(request, response, url);
+    }
+    break;
+
+    case 'POST':
+    if (url === '/') {
+      getPost(request, response);
     }
     break;
 
@@ -65,13 +36,14 @@ server.on('request', function(request, response) {
 
 function getHomepage (request, response) {
   var fs = require('fs');
-  fs.readFile("./public/index.html", function (err, data) {
+
+  fs.readFile('./public/index.html', function (err, data) {
     if (err) {
       get404(request, response);
     }
     else {
       response.writeHead(200, {
-        "Content-Type": "text/html"
+        'Content-Type': 'text/html'
       });
       response.write(data);
       response.end();
@@ -81,30 +53,56 @@ function getHomepage (request, response) {
 
 function getForm (request, response, url) {
   var fs = require('fs');
+
   fs.readFile('./public' + url, function(err, data){
     if (err){
       get404(request, response);
     }
     else {
       response.writeHead(200, {
-        "Content-Type": "text/html"
+        'Content-Type': 'text/html'
       });
-      response.write(data);
+
+      response.write(data, 'utf-8');
       response.end();
     }
   });
 }
 
+function getPost(request, response) {
+  var method = request.method;
+  var headers = request.headers;
+  var url = request.url;
+
+  request.on('data', function(chunk) {
+    body.push(chunk);
+  }).on('end', function() {
+    body = Buffer.concat(body).toString();
+  });
+
+  response.writeHead(200, {'Content-Type': 'application/json'});
+
+  var responseBody = {
+    headers: headers,
+    method: method,
+    url: url,
+    body: body
+  };
+  response.end(JSON.stringify(responseBody));
+}
+
 function get404 (request, response) {
   var fs = require('fs');
+
   fs.readFile('./public/404.html', function(err, data) {
     if (err) {
       throw err;
     }
     else {
       response.writeHead(404, {
-        "Content-Type": "text/html"
+        'Content-Type': 'text/html'
       });
+
       response.write(data);
       response.end();
     }
@@ -112,11 +110,11 @@ function get404 (request, response) {
 }
 
 function get405 (request, response) {
-  response.writeHead(405, "Method Not Supported", {
-          "Content-Type": "text/html"
-        });
-        response.write("<html><body>405: Method not supported. Go to <a href='/'>homepage</a></body></html>");
-        response.end();
+  response.writeHead(405, 'Method Not Supported', {
+    'Content-Type': 'text/html'
+  });
+  response.write("<html><body>405: Method not supported. Go to <a href='/'>homepage</a></body></html>");
+  response.end();
 }
 
 
